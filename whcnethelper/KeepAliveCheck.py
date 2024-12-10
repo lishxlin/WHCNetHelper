@@ -73,6 +73,7 @@ def KeepAliveCheckerMain(interval, maxDevice, head_payload, pid_file, connectivi
 			continue
 		elif status[1] == 0 and len(status) > 2 and status[2] >= maxDevice:
 			logutils.warn("You have reached the maximum allowed devices limit. Other devices or this device may kick off.")
+			time.sleep(interval)
 		else:
 			logutils.info("You are still online. No action needed.")
 			time.sleep(interval)
