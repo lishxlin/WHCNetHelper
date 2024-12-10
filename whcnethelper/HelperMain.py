@@ -42,7 +42,8 @@ def start_daemon(interval, maxDev, head_payload, pid_file, connectivity204_url):
 		f.write(str(process.pid))
 
 
-def stop_daemon():
+def stop_daemon(pid_file):
+	PID_FILE = pid_file
 	try:
 		with open(PID_FILE, "r") as f:
 			pid = int(f.read())
@@ -188,6 +189,8 @@ def main():
 		else:
 			logutils.info("You may not need login.")
 			csrf_cookie = LLH.get_csrf_cookies()
+			logutils.info("Perform Post-Login scripts....")
+			ShellSH.post_Login_Success()
 			daemon_status = start_daemon(REFRESH_INTERVAL, MAX_ONLINE_DEV, LLH.build_header_payload(USERNAME, PASSWORD, csrf_cookie, return_of_204_check), _PIDFILE, CAP_PORTAL_SERVER)
 			if daemon_status == 'checker_error':
 				logutils.error("Critical Error happened, program will exit.....")
@@ -198,7 +201,7 @@ def main():
 	elif ACTION == 'stop':
 		logutils.info("Perform Pre-Stop scripts...")
 		ShellSH.pre_Logout()
-		if stop_daemon():
+		if stop_daemon(_PIDFILE):
 			logutils.info("Perform Post-Stop scripts...")
 			ShellSH.post_Logout()
 			logutils.info("Program Stopped.")
