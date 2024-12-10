@@ -27,7 +27,7 @@ def check_pid_file(pid_file):
 		sys.exit(2)
 
 
-def daemon_process(interval, maxDev, head_payload, pid_file):
+def daemon_process(interval, maxDev, head_payload, pid_file, connectivity204_url):
 	logutils.info(f"Daemon started with PID {os.getpid()}.")
 	KAC.KeepAliveCheckerMain(interval, maxDev, head_payload, pid_file, connectivity204_url)
 
