@@ -32,9 +32,9 @@ def daemon_process(interval, maxDev, head_payload, pid_file):
 	KAC.KeepAliveCheckerMain(interval, maxDev, head_payload, pid_file)
 
 
-def start_daemon(interval, maxDev, head_payload):
+def start_daemon(interval, maxDev, head_payload, pid_file):
 	global PID_FILE
-	PID_FILE = '/var/run/whcnethelper.pid'
+	PID_FILE = pid_file
 	process = multiprocessing.Process(target=daemon_process, args=(interval, maxDev, head_payload, PID_FILE))
 	process.start()
 	logutils.info(f"Started daemon process with PID {process.pid}.")
@@ -99,11 +99,13 @@ def main():
 		if os.getuid() != 0:
 			print("This script should be run as root.")
 			sys.exit(1)
+			_PIDFILE = "/var/run/whcnethelper.pid"
 	else:
 		if prog_args.system_managed_config_dir is True:
 			print("Non privileged environment can not use system-managed config dir.")
 			sys.exit(1)
 		print("*** Running as a non-privileged user will cause some shell scripts to fail if they require privileged permissions. ***")
+		_PIDFILE = '/tmp/.whcnethelper.pid'
 		ALLOW_BARE = True
 
 	if ALLOW_BARE is not True:
@@ -173,7 +175,7 @@ def main():
 						ShellSH.post_Login_Success()
 
 						# Start a monitor daemon
-						daemon_status = start_daemon(REFRESH_INTERVAL, MAX_ONLINE_DEV, LLH.build_header_payload(USERNAME, PASSWORD, csrf_cookie, return_of_204_check))
+						daemon_status = start_daemon(REFRESH_INTERVAL, MAX_ONLINE_DEV, LLH.build_header_payload(USERNAME, PASSWORD, csrf_cookie, return_of_204_check), _PIDFILE)
 						if daemon_status == 'checker_error':
 							logutils.error("Critical Error happened, program will exit.....")
 							sys.exit(1)
@@ -186,7 +188,7 @@ def main():
 		else:
 			logutils.info("You may not need login.")
 			csrf_cookie = LLH.get_csrf_cookies()
-			daemon_status = start_daemon(REFRESH_INTERVAL, MAX_ONLINE_DEV, LLH.build_header_payload(USERNAME, PASSWORD, csrf_cookie, return_of_204_check))
+			daemon_status = start_daemon(REFRESH_INTERVAL, MAX_ONLINE_DEV, LLH.build_header_payload(USERNAME, PASSWORD, csrf_cookie, return_of_204_check), _PIDFILE)
 			if daemon_status == 'checker_error':
 				logutils.error("Critical Error happened, program will exit.....")
 				sys.exit(1)
