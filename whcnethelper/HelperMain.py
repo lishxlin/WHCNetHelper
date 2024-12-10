@@ -29,13 +29,13 @@ def check_pid_file(pid_file):
 
 def daemon_process(interval, maxDev, head_payload, pid_file):
 	logutils.info(f"Daemon started with PID {os.getpid()}.")
-	KAC.KeepAliveCheckerMain(interval, maxDev, head_payload, pid_file)
+	KAC.KeepAliveCheckerMain(interval, maxDev, head_payload, pid_file, connectivity204_url)
 
 
-def start_daemon(interval, maxDev, head_payload, pid_file):
+def start_daemon(interval, maxDev, head_payload, pid_file, connectivity204_url):
 	global PID_FILE
 	PID_FILE = pid_file
-	process = multiprocessing.Process(target=daemon_process, args=(interval, maxDev, head_payload, PID_FILE))
+	process = multiprocessing.Process(target=daemon_process, args=(interval, maxDev, head_payload, PID_FILE, connectivity204_url))
 	process.start()
 	logutils.info(f"Started daemon process with PID {process.pid}.")
 	with open(PID_FILE, "w") as f:
@@ -175,7 +175,7 @@ def main():
 						ShellSH.post_Login_Success()
 
 						# Start a monitor daemon
-						daemon_status = start_daemon(REFRESH_INTERVAL, MAX_ONLINE_DEV, LLH.build_header_payload(USERNAME, PASSWORD, csrf_cookie, return_of_204_check), _PIDFILE)
+						daemon_status = start_daemon(REFRESH_INTERVAL, MAX_ONLINE_DEV, LLH.build_header_payload(USERNAME, PASSWORD, csrf_cookie, return_of_204_check), _PIDFILE, CAP_PORTAL_SERVER)
 						if daemon_status == 'checker_error':
 							logutils.error("Critical Error happened, program will exit.....")
 							sys.exit(1)
@@ -188,7 +188,7 @@ def main():
 		else:
 			logutils.info("You may not need login.")
 			csrf_cookie = LLH.get_csrf_cookies()
-			daemon_status = start_daemon(REFRESH_INTERVAL, MAX_ONLINE_DEV, LLH.build_header_payload(USERNAME, PASSWORD, csrf_cookie, return_of_204_check), _PIDFILE)
+			daemon_status = start_daemon(REFRESH_INTERVAL, MAX_ONLINE_DEV, LLH.build_header_payload(USERNAME, PASSWORD, csrf_cookie, return_of_204_check), _PIDFILE, CAP_PORTAL_SERVER)
 			if daemon_status == 'checker_error':
 				logutils.error("Critical Error happened, program will exit.....")
 				sys.exit(1)

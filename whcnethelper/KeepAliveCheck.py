@@ -33,14 +33,14 @@ def stop_checker(signum, frame):
 		logutils.error("Can not logout.")
 
 
-def KeepAliveCheckerMain(interval, maxDevice, head_payload, pid_file):
+def KeepAliveCheckerMain(interval, maxDevice, head_payload, pid_file, connectivity204_url):
 
 	# Catch SIGTERM
 	signal.signal(signal.SIGTERM, stop_checker)
 
 	while True:
 		Main.check_pid_file(pid_file)
-		status = post_login_living_checker()
+		status = post_login_living_checker(connectivity204_url)
 		if not status:
 			logutils.error("Failed to retrieve status. Exiting check loop.")
 			logutils.info("Perform on-Disconnect scripts....")
