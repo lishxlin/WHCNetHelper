@@ -3,6 +3,7 @@ import json
 import os
 import time
 import signal
+import sys
 import whcnethelper.LoggingUtils as logutils
 import whcnethelper.LoginLogoutHandler as LLH
 import whcnethelper.HelperMain as Main
@@ -31,6 +32,8 @@ def stop_checker(signum, frame):
 	logutils.info(f"Received SIGNAL {signum}.")
 	if not LLH.send_logout_get():
 		logutils.error("Can not logout.")
+	else:
+		sys.exit(0)
 
 
 def KeepAliveCheckerMain(interval, maxDevice, head_payload, pid_file, connectivity204_url):
