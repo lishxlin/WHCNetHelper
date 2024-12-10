@@ -127,7 +127,9 @@ def postLogin_check(auth_response):
 
 	if authCode == 'ok:radius' and login_code == 0:
 		logutils.info("Login is successfully with response:")
-		logutils.info(f"Login status: {authCode}\nMessage: {login_msg}\nOnline devices: {devices_count}")
+		logutils.info(f"Login status: {authCode}")
+		logutils.info(f"Message: {login_msg}")
+		logutils.info(f"Online devices: {devices_count}")
 		for key in auth_response.get('online'):
 			logutils.info(f"{key}: {auth_response.get('online').get(key)}")
 		return True

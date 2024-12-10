@@ -71,7 +71,7 @@ def KeepAliveCheckerMain(interval, maxDevice, head_payload, pid_file, connectivi
 			logutils.warn("The connectivity 204 server did not return 204, but you are still online. Please be aware!")
 			time.sleep(interval)
 			continue
-		elif status[1] == 0 and len(status) > 2 and status[2] == maxDevice:
+		elif status[1] == 0 and len(status) > 2 and status[2] >= maxDevice:
 			logutils.warn("You have reached the maximum allowed devices limit. Other devices or this device may kick off.")
 		else:
 			logutils.info("You are still online. No action needed.")
